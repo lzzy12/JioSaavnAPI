@@ -7,6 +7,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET", 'thankyoutonystark#weloveyou3000')
+app.debug = os.environ.get("DEBUG", "").lower() in ("", "true", "t")
 CORS(app)
 
 
@@ -169,5 +170,8 @@ def result():
 
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run(host='0.0.0.0', port=5100, use_reloader=True, threaded=True)
+    if not app.debug:
+        from waitress import serve
+        serve(app, host="0.0.0.0", port=5100)
+    else:
+        app.run(host='0.0.0.0', port=5100, use_reloader=True, threaded=True)
